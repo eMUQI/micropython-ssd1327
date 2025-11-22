@@ -1,6 +1,6 @@
 # MicroPython SSD1327
 
-A MicroPython library for SSD1327 128x128 4-bit greyscale OLED displays, over I2C.
+A MicroPython library for SSD1327 128x128 4-bit greyscale OLED displays, over I2C or SPI.
 
 For example, the [Grove - OLED Display 1.12"](http://wiki.seeed.cc/Grove-OLED_Display_1.12inch/) which features a 96x96 display.
 
@@ -18,6 +18,11 @@ $ ampy put ssd1327.py
 
 ```python
 import ssd1327
+
+# using Hardware SPI
+# from machine import Pin, SPI
+# spi = SPI(1, baudrate=10000000, sck=Pin(SCK_PIN), mosi=Pin(MOSI_PIN))
+# display = ssd1327.SSD1327_SPI(128, 128, spi, dc=Pin(DC_PIN), res=Pin(RST_PIN), cs=Pin(CS_PIN))
 
 # using Software I2C
 from machine import SoftI2C, Pin
@@ -51,6 +56,7 @@ See [/examples](/examples) for more.
 * [Raspberry Pi Pico](https://core-electronics.com.au/raspberry-pi-pico.html)
 * [WeMos D1 Mini](https://www.aliexpress.com/item/32529101036.html)
 * [Grove Male Jumper Cable](https://www.seeedstudio.com/Grove-4-pin-Male-Jumper-to-Grove-4-pin-Conversion-Cable-5-PCs-per-Pack.html)
+* [WaveShare 1.5inch OLED Module, SPI/I2C interface](https://www.waveshare.com/1.5inch-oled-module.htm)
 
 ## Connections
 
