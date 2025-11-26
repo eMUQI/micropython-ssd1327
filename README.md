@@ -1,10 +1,6 @@
 # MicroPython SSD1327
 
-A MicroPython library for SSD1327 128x128 4-bit greyscale OLED displays, over I2C.
-
-For example, the [Grove - OLED Display 1.12"](http://wiki.seeed.cc/Grove-OLED_Display_1.12inch/) which features a 96x96 display.
-
-![demo](docs/demo.jpg)
+A MicroPython library for SSD1327 128x128 4-bit greyscale OLED displays, over I2C or SPI.
 
 ## Example
 
@@ -14,30 +10,38 @@ Copy the file to your device, using ampy, webrepl or compiling and deploying. eg
 $ ampy put ssd1327.py
 ```
 
-**Hello World**
+### I2C Example
 
 ```python
+from machine import Pin, I2C
 import ssd1327
 
-# using Software I2C
-from machine import SoftI2C, Pin
-i2c = SoftI2C(sda=Pin(21), scl=Pin(22)) # TinyPICO
-# i2c = SoftI2C(sda=Pin(0), scl=Pin(1)) # Raspberry Pi Pico
-# i2c = SoftI2C(sda=Pin(4), scl=Pin(5)) # WeMos D1 Mini
+# ESP32 S3 ZERO
+i2c = I2C(0, scl=Pin(2), sda=Pin(1), freq=400000)
 
-# or using Hardware I2C
-from machine import I2C, Pin
-i2c = I2C(0) # TinyPICO sda=19, scl=18
+# Raspberry Pi Pico
+# i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
 
-display = ssd1327.SEEED_OLED_96X96(i2c)  # Grove OLED Display
-# display = ssd1327.SSD1327_I2C(128, 128, i2c)  # WaveShare, Zio Qwiic
+# Initialize Display (Address usually 0x3C or 0x3D)
+display = ssd1327.SSD1327_I2C(128, 128, i2c, addr=0x3D) # WaveShare 1.5inch OLED Module
 
-display.text('Hello World', 0, 0, 255)
+display.fill(0)  # Clear screen
+display.text('Hello World', 0, 0, 15) # Draw text in full brightness (15)
 display.show()
+```
+
+### SPI Example
+
+```python
+from machine import Pin, SPI
+import ssd1327
+
+# ESP32 S3 ZERO
+spi = SPI(1, baudrate=10000000, polarity=0, phase=0, sck=Pin(13), mosi=Pin(11))
+display = ssd1327.SSD1327_SPI(128, 128, spi, dc=Pin(8), res=Pin(9), cs=Pin(10))
 
 display.fill(0)
-for y in range(0,12):
-    display.text('Hello World', 0, y * 8, 15 - y)
+display.text('SPI Display', 0, 0, 15)
 display.show()
 ```
 
@@ -45,40 +49,12 @@ See [/examples](/examples) for more.
 
 ## Parts
 
-* [Grove OLED Display 1.12"](https://www.seeedstudio.com/Grove-OLED-Display-1-12.html)
-* [Zio Qwiic OLED Display (1.5inch, 128x128)](https://www.sparkfun.com/products/15890)
-* [TinyPICO](https://www.tinypico.com/)
+* [WaveShare ESP32-S3 Zero](https://www.waveshare.com/esp32-s3-zero.htm)
 * [Raspberry Pi Pico](https://core-electronics.com.au/raspberry-pi-pico.html)
-* [WeMos D1 Mini](https://www.aliexpress.com/item/32529101036.html)
-* [Grove Male Jumper Cable](https://www.seeedstudio.com/Grove-4-pin-Male-Jumper-to-Grove-4-pin-Conversion-Cable-5-PCs-per-Pack.html)
-
-## Connections
-
-TinyPICO ESP32 | Grove OLED
--------------- | ----------
-GPIO22 (SCL)   | SCL
-GPIO21 (SDA)   | SDA
-3V3            | VCC
-GND            | GND
-
-Raspberry Pi Pico | Grove OLED
------------------ | ----------
-GPIO1 (I2C0_SCL)  | SCL
-GPIO0 (I2C0_SDA)  | SDA
-3V3               | VCC
-GND               | GND
-
-WeMos D1 Mini | Grove OLED
-------------- | ----------
-D1 (GPIO5)    | SCL
-D2 (GPIO4)    | SDA
-3V3 (or 5V)   | VCC
-G             | GND
+* [WaveShare 1.5inch OLED Module, SPI/I2C interface](https://www.waveshare.com/1.5inch-oled-module.htm)
 
 ## Links
 
-* [TinyPICO Getting Started](https://www.tinypico.com/gettingstarted)
-* [WeMos D1 Mini](https://www.wemos.cc/en/latest/d1/d1_mini.html)
 * [micropython.org](http://micropython.org)
 * [micropython docs](http://docs.micropython.org/en/latest/)
 * [Adafruit Ampy](https://learn.adafruit.com/micropython-basics-load-files-and-run-code/install-ampy)
