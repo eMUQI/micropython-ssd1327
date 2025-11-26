@@ -199,3 +199,45 @@ class SEEED_OLED_96X96(SSD1327_I2C):
 class WS_OLED_128X128(SSD1327_I2C):
     def __init__(self, i2c, addr=0x3c):
         super().__init__(128, 128, i2c, addr)
+
+class SSD1327_SPI(SSD1327):
+    def __init__(self, width, height, spi, dc, res=None, cs=None):
+        self.spi = spi
+        self.dc = dc
+        self.res = res
+        self.cs = cs
+        
+        # Initialize pins
+        self.dc.init(self.dc.OUT, value=0)
+        
+        if self.res:
+            self.res.init(self.res.OUT, value=1)
+        
+        if self.cs:
+            self.cs.init(self.cs.OUT, value=1)
+        
+        # Perform hardware reset
+        if self.res:
+            self.res(0)
+            import time
+            time.sleep_ms(10)
+            self.res(1)
+            time.sleep_ms(10)
+        
+        super().__init__(width, height)
+
+    def write_cmd(self, cmd):
+        if self.cs:
+            self.cs(0)
+        self.dc(0)  # Command mode
+        self.spi.write(bytearray([cmd]))
+        if self.cs:
+            self.cs(1)
+
+    def write_data(self, data_buf):
+        if self.cs:
+            self.cs(0)
+        self.dc(1)  # Data mode
+        self.spi.write(data_buf)
+        if self.cs:
+            self.cs(1)
